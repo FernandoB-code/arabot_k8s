@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-api
+spec:
+  selector:
+    app: cart-api
+  ports:
+    - protocol: TCP
+      port: 8083
+      targetPort: 8083
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart-api
+  template:
+    metadata:
+      labels:
+        app: cart-api
+    spec:
+      containers:
+        - name: cart-api
+          image: cart-api:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MONGODB_HOST
+              value: "mongo"
+            - name: MONGODB_PORT
+              value: "27017"
+            - name: MONGODB_DATABASE
+              value: "your_database"
+            - name: MONGODB_UUID_REPRESENTATION
+              value: "standard"            
+            - name: RABBITMQ_QUEUE
+              value: "products_notification"
+            - name: RABBITMQ_EXCHANGE
+              value: "products_exchange"
+            - name: RABBITMQ_ROUTINGKEY
+              value: "products_routingkey"
+            - name: RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: RABBITMQ_PORT
+              value: "5672"
+            - name: RABBITMQ_USERNAME
+              value: "guest"
+            - name: RABBITMQ_PASSWORD
+              value: "guest"
+
